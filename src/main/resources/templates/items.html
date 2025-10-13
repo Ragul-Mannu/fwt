@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Food Waste Tracker 🍎</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      h1 {
+        text-align: center;
+        color: #2b5797;
+        margin-top: 30px;
+      }
+      .container {
+        background: #fff;
+        width: 450px;
+        margin: 40px auto;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      input,
+      button {
+        width: 80%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+      button {
+        background: #2b5797;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      button:hover {
+        background: #1e3d73;
+      }
+      .mic-btn {
+        background: #ff5e5e;
+      }
+      .mic-btn:hover {
+        background: #d43f3f;
+      }
+      #scanner-container {
+        width: 400px;
+        height: 280px;
+        margin: 20px auto;
+        border: 3px solid #4a90e2;
+        border-radius: 10px;
+        overflow: hidden;
+        display: none;
+        position: relative;
+      }
+      #scanner-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      #emojiDisplay {
+        font-size: 40px;
+        margin-top: 10px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: 30px auto;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      tr:hover {
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🍏 Food Waste Tracker</h1>
+
+    <div class="container">
+      <form th:action="@{/food/add}" method="post" th:object="${newItem}">
+        <input
+          type="text"
+          id="foodName"
+          th:field="*{name}"
+          placeholder="Food Name"
+          required
+        />
+        <input type="date" id="expiryDate" th:field="*{expiryDate}" required />
+        <div id="emojiDisplay"></div>
+
+        <button type="button" class="mic-btn" onclick="startVoiceInput('name')">
+          🎤 Food Name
+        </button>
+        <button type="button" class="mic-btn" onclick="startVoiceInput('date')">
+          🎤 Expiry Date
+        </button>
+        <button type="button" onclick="startScanner()">📷 Scan</button>
+        <button type="submit">➕ Add Item</button>
+      </form>
+
+      <div id="scanner-container">
+        <video id="scanner-video" autoplay muted playsinline></video>
+      </div>
+    </div>
+
+    <table>
+      <tr>
+        <th>Food</th>
+        <th>Expiry</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      <tr th:each="item : ${items}">
+        <td th:text="${item.emoji} + ' ' + ${item.name}"></td>
+        <td th:text="${item.expiryDate}"></td>
+        <td th:text="${item.status}"></td>
+        <td>
+          <form
+            th:if="${item.status.contains('⚠️')}"
+            th:action="@{'/food/notify/' + ${item.id}}"
+            method="post"
+          >
+            <button
+              type="submit"
+              style="
+                background: orange;
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+              "
+            >
+              📩 Send Notification
+            </button>
+          </form>
+        </td>
+      </tr>
+    </table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <script>
+      // Emoji mapping
+      const emojiMap = {
+        apple: "🍎",
+        banana: "🍌",
+        orange: "🍊",
+        milk: "🥛",
+        bread: "🍞",
+        rice: "🍚",
+        egg: "🥚",
+        cheese: "🧀",
+        chicken: "🍗",
+        fish: "🐟",
+        meat: "🥩",
+        tomato: "🍅",
+        potato: "🥔",
+        carrot: "🥕",
+        pizza: "🍕",
+        burger: "🍔",
+        cake: "🍰",
+        chocolate: "🍫",
+        ice: "🍨",
+        water: "💧",
+        coffee: "☕",
+      };
+
+      function updateEmojiDisplay(foodName) {
+        const lower = foodName.toLowerCase();
+        let emoji = "🍽️";
+        for (const key in emojiMap) {
+          if (lower.includes(key)) {
+            emoji = emojiMap[key];
+            break;
+          }
+        }
+        document.getElementById("emojiDisplay").textContent = emoji;
+      }
+
+      // Voice input (food name or date)
+      function startVoiceInput(type) {
+        if (
+          !(
+            "webkitSpeechRecognition" in window || "SpeechRecognition" in window
+          )
+        ) {
+          alert("Your browser doesn't support speech recognition.");
+          return;
+        }
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onstart = () => {
+          if (type === "name")
+            document.querySelector(".mic-btn").textContent =
+              "🎙️ Listening for Food Name...";
+          else
+            document.querySelector(".mic-btn").textContent =
+              "🎙️ Listening for Expiry Date...";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (type === "name") {
+            document.getElementById("foodName").value = transcript;
+            updateEmojiDisplay(transcript);
+          } else if (type === "date") {
+            const parsedDate = parseSpokenDate(transcript);
+            if (parsedDate)
+              document.getElementById("expiryDate").value = parsedDate;
+            else alert("Could not understand date. Try YYYY-MM-DD format.");
+          }
+        };
+
+        recognition.onerror = (event) => {
+          alert("Voice input error: " + event.error);
+        };
+        recognition.onend = () => {
+          document.querySelector(".mic-btn").textContent =
+            type === "name" ? "🎤 Food Name" : "🎤 Expiry Date";
+        };
+      }
+
+      // Convert spoken date to YYYY-MM-DD
+      function parseSpokenDate(spoken) {
+        const parts = spoken.match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
+        if (parts && parts.length === 4) {
+          let month = parts[2].padStart(2, "0");
+          let day = parts[3].padStart(2, "0");
+          return `${parts[1]}-${month}-${day}`;
+        }
+        return null;
+      }
+
+      // Barcode scanner
+      function startScanner() {
+        const scanner = document.getElementById("scanner-container");
+        scanner.style.display = "block";
+
+        Quagga.init(
+          {
+            inputStream: {
+              name: "Live",
+              type: "LiveStream",
+              target: scanner,
+              constraints: {
+                width: 400,
+                height: 280,
+                facingMode: "environment",
+              },
+            },
+            locator: { patchSize: "medium", halfSample: true },
+            numOfWorkers: navigator.hardwareConcurrency || 4,
+            decoder: {
+              readers: [
+                "ean_reader",
+                "ean_8_reader",
+                "code_128_reader",
+                "code_39_reader",
+              ],
+            },
+            locate: true,
+          },
+          function (err) {
+            if (err) {
+              console.error(err);
+              alert("Camera failed to start.");
+              return;
+            }
+            Quagga.start();
+          }
+        );
+
+        Quagga.onDetected(function (result) {
+          const code = result.codeResult.code;
+          document.getElementById("foodName").value = code;
+          updateEmojiDisplay(code);
+          Quagga.stop();
+          scanner.style.display = "none";
+        });
+      }
+
+      document.getElementById("foodName").addEventListener("input", (e) => {
+        updateEmojiDisplay(e.target.value);
+      });
+    </script>
+  </body>
+</html>
