@@ -3,10 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Food Waste Tracker 🍎</title>
-
+    <title>Food Waste Tracker</title>
     <style>
-      /* ===== GLOBAL STYLES ===== */
+      /* ============ BASE STYLE ============ */
       * {
         margin: 0;
         padding: 0;
@@ -14,87 +13,48 @@
       }
       body {
         font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #e0f7fa, #fce4ec);
-        color: #2c3e50;
-        min-height: 100vh;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb, #e1f5fe);
+        color: #1a237e;
         overflow-x: hidden;
+        min-height: 100vh;
+        position: relative;
+        cursor: crosshair;
       }
 
-      /* Floating food animation */
-      @keyframes floatFood {
-        0% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-15px);
-        }
-        100% {
-          transform: translateY(0);
-        }
-      }
-
-      .floating {
-        position: absolute;
-        font-size: 30px;
-        opacity: 0.2;
-        animation: floatFood 6s ease-in-out infinite;
-      }
-      .f1 {
-        left: 5%;
-        top: 10%;
-        animation-delay: 0s;
-      }
-      .f2 {
-        left: 85%;
-        top: 20%;
-        animation-delay: 2s;
-      }
-      .f3 {
-        left: 50%;
-        top: 5%;
-        animation-delay: 4s;
-      }
-      .f4 {
-        left: 20%;
-        top: 70%;
-        animation-delay: 3s;
-      }
-      .f5 {
-        left: 80%;
-        top: 75%;
-        animation-delay: 1s;
-      }
-
-      /* ===== HEADER ===== */
+      /* ============ HEADER ============ */
       header {
         text-align: center;
-        padding: 40px 10px 10px;
+        padding: 40px 10px 20px;
+        z-index: 2;
+        position: relative;
       }
       header h1 {
-        font-size: 2.5rem;
-        color: #1a237e;
-        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 2.8rem;
+        color: #0d47a1;
+        text-shadow: 2px 2px 8px rgba(33, 150, 243, 0.3);
       }
       header p {
-        color: #546e7a;
+        color: #1565c0;
         font-size: 1.1rem;
+        font-weight: 500;
       }
 
-      /* ===== FORM CARD ===== */
+      /* ============ FORM CONTAINER ============ */
       .form-container {
-        background: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(10px);
+        border-radius: 20px;
         width: 90%;
-        max-width: 500px;
+        max-width: 480px;
         margin: 40px auto;
         padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         text-align: center;
-        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        z-index: 2;
+        transition: transform 0.3s ease;
       }
       .form-container:hover {
-        transform: translateY(-3px);
+        transform: translateY(-5px);
       }
 
       input,
@@ -103,60 +63,75 @@
         padding: 12px;
         margin: 10px 0;
         border-radius: 10px;
-        border: 1px solid #ccc;
+        border: 1px solid #b0bec5;
         font-size: 15px;
-        outline: none;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
       }
 
       input:focus {
         border-color: #42a5f5;
-        box-shadow: 0 0 10px rgba(66, 165, 245, 0.2);
+        box-shadow: 0 0 8px rgba(66, 165, 245, 0.4);
+        outline: none;
       }
 
       button {
-        background: linear-gradient(135deg, #42a5f5, #1e88e5);
-        color: white;
         border: none;
-        font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s ease-in-out;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: 0.3s ease;
       }
+
       button:hover {
         transform: scale(1.05);
-        background: linear-gradient(135deg, #1e88e5, #1976d2);
       }
 
       .mic-btn {
-        background: linear-gradient(135deg, #ff6f61, #e53935);
+        background: linear-gradient(135deg, #ef5350, #e53935);
       }
       .mic-btn:hover {
         background: linear-gradient(135deg, #e53935, #c62828);
       }
 
-      .emoji {
-        font-size: 50px;
-        margin-top: 10px;
+      .scan-btn {
+        background: linear-gradient(135deg, #26a69a, #00897b);
+      }
+      .scan-btn:hover {
+        background: linear-gradient(135deg, #00897b, #00695c);
       }
 
-      /* ===== TABLE ===== */
+      .add-btn {
+        background: linear-gradient(135deg, #42a5f5, #1e88e5);
+      }
+      .add-btn:hover {
+        background: linear-gradient(135deg, #1e88e5, #1565c0);
+      }
+
+      .emoji {
+        font-size: 45px;
+        margin: 12px 0;
+      }
+
+      /* ============ TABLE ============ */
       table {
         width: 85%;
         margin: 30px auto;
         border-collapse: collapse;
-        background: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.9);
         border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        z-index: 2;
       }
       th,
       td {
         padding: 12px;
         text-align: center;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #e3f2fd;
       }
       th {
-        background-color: #1e88e5;
+        background-color: #2196f3;
         color: white;
       }
       tr:hover {
@@ -164,7 +139,7 @@
       }
 
       .notify-btn {
-        background: linear-gradient(135deg, #ffa726, #fb8c00);
+        background: linear-gradient(135deg, #ffb74d, #fb8c00);
         border: none;
         border-radius: 8px;
         padding: 6px 10px;
@@ -178,33 +153,52 @@
         background: linear-gradient(135deg, #fb8c00, #ef6c00);
       }
 
-      /* Responsive */
-      @media (max-width: 600px) {
-        header h1 {
-          font-size: 2rem;
+      /* ============ FALLING FOOD ============ */
+      .food {
+        position: fixed;
+        top: -10vh;
+        z-index: 1;
+        animation: fall linear forwards;
+        filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-10vh) translateX(0);
+          opacity: 0;
         }
-        .form-container {
-          width: 95%;
+        10% {
+          opacity: 1;
         }
-        table {
-          width: 95%;
-          font-size: 14px;
+        100% {
+          transform: translateY(110vh) translateX(calc(var(--drift, 1) * 30px));
+          opacity: 0;
+        }
+      }
+
+      /* Microphone pulsing animation */
+      .mic-active {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(239, 83, 80, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(239, 83, 80, 0);
         }
       }
     </style>
   </head>
 
   <body>
-    <!-- Floating emojis for animated background -->
-    <div class="floating f1">🍎</div>
-    <div class="floating f2">🥦</div>
-    <div class="floating f3">🥕</div>
-    <div class="floating f4">🍕</div>
-    <div class="floating f5">🍰</div>
-
     <header>
-      <h1>🍏 Food Waste Tracker</h1>
-      <p>Track. Save. Sustain.</p>
+      <h1>Food Waste Tracker</h1>
+      <p>Track • Save • Sustain • Enjoy</p>
     </header>
 
     <div class="form-container">
@@ -213,20 +207,32 @@
           type="text"
           id="foodName"
           th:field="*{name}"
-          placeholder="Enter food name"
+          placeholder="Enter Food Name"
           required
         />
         <input type="date" id="expiryDate" th:field="*{expiryDate}" required />
         <div id="emojiDisplay" class="emoji">🍽️</div>
 
-        <button type="button" class="mic-btn" onclick="startVoiceInput('name')">
+        <button
+          id="nameMic"
+          type="button"
+          class="mic-btn"
+          onclick="startVoiceInput('name', this)"
+        >
           🎤 Speak Food Name
         </button>
-        <button type="button" class="mic-btn" onclick="startVoiceInput('date')">
+        <button
+          id="dateMic"
+          type="button"
+          class="mic-btn"
+          onclick="startVoiceInput('date', this)"
+        >
           🗓️ Speak Expiry Date
         </button>
-        <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
-        <button type="submit">➕ Add Food</button>
+        <button type="button" class="scan-btn" onclick="startScanner()">
+          📷 Scan Barcode
+        </button>
+        <button type="submit" class="add-btn">➕ Add Food</button>
       </form>
     </div>
 
@@ -253,9 +259,63 @@
       </tr>
     </table>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script>
-      // Emoji mapping
+      // === Falling Emoji Animation ===
+      const emojis = [
+        "🍎",
+        "🍌",
+        "🍕",
+        "🍔",
+        "🥕",
+        "🍦",
+        "🍇",
+        "🍫",
+        "🥩",
+        "🍰",
+      ];
+
+      function createFallingEmoji() {
+        const emoji = document.createElement("span");
+        emoji.classList.add("food");
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.fontSize = 25 + Math.random() * 30 + "px";
+        emoji.style.animationDuration = 5 + Math.random() * 5 + "s";
+        emoji.style.opacity = 0.9;
+        emoji.style.filter = `drop-shadow(0 0 8px rgba(33,150,243,${
+          0.4 + Math.random() * 0.4
+        }))`;
+        emoji.style.setProperty("--drift", Math.random() > 0.5 ? 1 : -1);
+        document.body.appendChild(emoji);
+
+        emoji.addEventListener("animationend", () => {
+          emoji.remove();
+          createFallingEmoji();
+        });
+      }
+
+      for (let i = 0; i < 25; i++) {
+        setTimeout(createFallingEmoji, i * 300);
+      }
+
+      // === Mouse Wave Interaction ===
+      document.addEventListener("mousemove", (e) => {
+        document.querySelectorAll(".food").forEach((food) => {
+          const dx = e.clientX - food.offsetLeft;
+          const dy = e.clientY - food.offsetTop;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            const angle = Math.atan2(dy, dx);
+            food.style.transform = `translate(${Math.cos(angle) * 15}px, ${
+              Math.sin(angle) * 15
+            }px) rotate(${Math.random() * 360}deg)`;
+          } else {
+            food.style.transform = "translate(0, 0)";
+          }
+        });
+      });
+
+      // === Emoji Display ===
       const emojiMap = {
         apple: "🍎",
         banana: "🍌",
@@ -292,21 +352,28 @@
         document.getElementById("emojiDisplay").textContent = emoji;
       }
 
-      // Voice input
-      function startVoiceInput(type) {
-        if (
-          !(
-            "webkitSpeechRecognition" in window || "SpeechRecognition" in window
-          )
-        ) {
-          alert("Voice recognition not supported.");
+      document
+        .getElementById("foodName")
+        .addEventListener("input", (e) => updateEmojiDisplay(e.target.value));
+
+      // === Voice Input ===
+      function startVoiceInput(type, btn) {
+        if (!("webkitSpeechRecognition" in window)) {
+          alert("❌ Speech recognition not supported in this browser.");
           return;
         }
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+
+        const recognition = new webkitSpeechRecognition();
         recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
         recognition.start();
+        btn.classList.add("mic-active");
+
+        recognition.onstart = () => {
+          btn.textContent = "🎙️ Listening...";
+        };
 
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
@@ -314,26 +381,60 @@
             document.getElementById("foodName").value = transcript;
             updateEmojiDisplay(transcript);
           } else if (type === "date") {
-            const parsed = transcript.match(
-              /(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/
-            );
-            if (parsed)
-              document.getElementById("expiryDate").value = `${
-                parsed[1]
-              }-${parsed[2].padStart(2, "0")}-${parsed[3].padStart(2, "0")}`;
-            else alert("Couldn't detect date properly.");
+            const parsedDate = parseSpokenDate(transcript);
+            if (parsedDate)
+              document.getElementById("expiryDate").value = parsedDate;
+            else
+              alert(
+                "⚠️ Couldn't understand date. Try saying like '2025 November 9'"
+              );
           }
+        };
+
+        recognition.onerror = (event) => {
+          alert("⚠️ Voice recognition error: " + event.error);
+        };
+
+        recognition.onend = () => {
+          btn.textContent =
+            type === "name" ? "🎤 Speak Food Name" : "🗓️ Speak Expiry Date";
+          btn.classList.remove("mic-active");
         };
       }
 
-      // Barcode scanner
-      function startScanner() {
-        alert("Barcode scanning coming soon! (For now, type manually)");
+      function parseSpokenDate(spoken) {
+        const months = {
+          january: 1,
+          february: 2,
+          march: 3,
+          april: 4,
+          may: 5,
+          june: 6,
+          july: 7,
+          august: 8,
+          september: 9,
+          october: 10,
+          november: 11,
+          december: 12,
+        };
+
+        spoken = spoken.toLowerCase();
+        const match = spoken.match(
+          /(\d{1,2})\s*(?:th|st|nd|rd)?\s*([a-zA-Z]+)\s*(\d{4})?/
+        );
+        if (match) {
+          const day = match[1].padStart(2, "0");
+          const month = months[match[2]] || "01";
+          const year = match[3] || new Date().getFullYear();
+          return `${year}-${month.toString().padStart(2, "0")}-${day}`;
+        }
+        return null;
       }
 
-      document
-        .getElementById("foodName")
-        .addEventListener("input", (e) => updateEmojiDisplay(e.target.value));
+      // === Scanner Placeholder ===
+      function startScanner() {
+        alert("📷 Barcode scanning coming soon!");
+      }
     </script>
   </body>
 </html>
