@@ -1,0 +1,13 @@
+# Ignore compiled and build files
+target/
+build/
+
+# Ignore sensitive configuration files
+*.env
+*.properties
+application.properties
+
+# IDE specific files
+.idea/
+*.iml
+.vscode/
