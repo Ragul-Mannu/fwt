@@ -1,0 +1,23 @@
+[35mpom.xml[m[36m:[m        <!-- [1;31mTwilio[m -->
+[35mpom.xml[m[36m:[m            <groupId>com.[1;31mtwilio[m.sdk</groupId>
+[35mpom.xml[m[36m:[m            <artifactId>[1;31mtwilio[m</artifactId>
+[35msrc/main/java/com/tracker/FoodItemController.java[m[36m:[m    private [1;31mTwilio[mNotifier notifier;
+[35msrc/main/java/com/tracker/TwilioConfig.java[m[36m:[mpublic class [1;31mTwilio[mConfig {
+[35msrc/main/java/com/tracker/TwilioConfig.java[m[36m:[m    @Value("${[1;31mtwilio[m.accountSid}")
+[35msrc/main/java/com/tracker/TwilioConfig.java[m[36m:[m    @Value("${[1;31mtwilio[m.authToken}")
+[35msrc/main/java/com/tracker/TwilioConfig.java[m[36m:[m    @Value("${[1;31mtwilio[m.fromNumber}")
+[35msrc/main/java/com/tracker/TwilioConfig.java[m[36m:[m    @Value("${[1;31mtwilio[m.defaultRecipient}")
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[mimport com.[1;31mtwilio[m.[1;31mTwilio[m;
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[mimport com.[1;31mtwilio[m.rest.api.v2010.account.Message;
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[mpublic class [1;31mTwilio[mNotifier {
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m    private final [1;31mTwilio[mConfig [1;31mtwilio[mConfig;
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m    public [1;31mTwilio[mNotifier([1;31mTwilio[mConfig [1;31mtwilio[mConfig) {
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m        this.[1;31mtwilio[mConfig = [1;31mtwilio[mConfig;
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m        [1;31mTwilio[m.init([1;31mtwilio[mConfig.getAccountSid(), [1;31mtwilio[mConfig.getAuthToken());
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m                new com.[1;31mtwilio[m.type.PhoneNumber([1;31mtwilio[mConfig.getDefaultRecipient()),
+[35msrc/main/java/com/tracker/TwilioNotifier.java[m[36m:[m                new com.[1;31mtwilio[m.type.PhoneNumber([1;31mtwilio[mConfig.getFromNumber()),
+Binary file [35mtarget/classes/com/tracker/FoodItemController.class[m matches
+Binary file [35mtarget/classes/com/tracker/TwilioConfig.class[m matches
+Binary file [35mtarget/classes/com/tracker/TwilioNotifier.class[m matches
+[35mtarget/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst[m[36m:[mC:\dilli\src\main\java\com\tracker\[1;31mTwilio[mConfig.java
+[35mtarget/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst[m[36m:[mC:\dilli\src\main\java\com\tracker\[1;31mTwilio[mNotifier.java

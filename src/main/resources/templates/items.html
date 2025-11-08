@@ -1,184 +1,232 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Food Waste Tracker 🍎</title>
+
     <style>
+      /* ===== GLOBAL STYLES ===== */
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       body {
         font-family: "Poppins", sans-serif;
-        margin: 0;
-        padding: 0;
+        background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+        color: #2c3e50;
+        min-height: 100vh;
         overflow-x: hidden;
-        background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-        height: 100vh;
-        animation: bgMove 20s infinite alternate ease-in-out;
       }
-      @keyframes bgMove {
-        from {
-          background-position: 0 0;
+
+      /* Floating food animation */
+      @keyframes floatFood {
+        0% {
+          transform: translateY(0);
         }
-        to {
-          background-position: 100% 100%;
+        50% {
+          transform: translateY(-15px);
+        }
+        100% {
+          transform: translateY(0);
         }
       }
-      h1 {
+
+      .floating {
+        position: absolute;
+        font-size: 30px;
+        opacity: 0.2;
+        animation: floatFood 6s ease-in-out infinite;
+      }
+      .f1 {
+        left: 5%;
+        top: 10%;
+        animation-delay: 0s;
+      }
+      .f2 {
+        left: 85%;
+        top: 20%;
+        animation-delay: 2s;
+      }
+      .f3 {
+        left: 50%;
+        top: 5%;
+        animation-delay: 4s;
+      }
+      .f4 {
+        left: 20%;
+        top: 70%;
+        animation-delay: 3s;
+      }
+      .f5 {
+        left: 80%;
+        top: 75%;
+        animation-delay: 1s;
+      }
+
+      /* ===== HEADER ===== */
+      header {
         text-align: center;
-        color: #ffffff;
-        margin-top: 25px;
-        font-size: 2rem;
-        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        padding: 40px 10px 10px;
       }
-      .container {
-        background: rgba(255, 255, 255, 0.95);
-        width: 450px;
+      header h1 {
+        font-size: 2.5rem;
+        color: #1a237e;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      header p {
+        color: #546e7a;
+        font-size: 1.1rem;
+      }
+
+      /* ===== FORM CARD ===== */
+      .form-container {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+        width: 90%;
+        max-width: 500px;
         margin: 40px auto;
-        padding: 25px;
+        padding: 30px;
         border-radius: 20px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         text-align: center;
-        position: relative;
-        z-index: 2;
+        transition: all 0.3s ease;
       }
+      .form-container:hover {
+        transform: translateY(-3px);
+      }
+
       input,
-      button,
-      select {
+      button {
         width: 85%;
-        padding: 10px;
+        padding: 12px;
         margin: 10px 0;
         border-radius: 10px;
         border: 1px solid #ccc;
         font-size: 15px;
         outline: none;
+        transition: all 0.3s;
       }
+
       input:focus {
-        border-color: #4a90e2;
+        border-color: #42a5f5;
+        box-shadow: 0 0 10px rgba(66, 165, 245, 0.2);
       }
+
       button {
+        background: linear-gradient(135deg, #42a5f5, #1e88e5);
+        color: white;
+        border: none;
+        font-weight: 600;
         cursor: pointer;
-        font-weight: bold;
-        transition: 0.3s;
+        transition: all 0.2s ease-in-out;
       }
-      .btn-scan {
-        background: #007bff;
-        color: white;
+      button:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #1e88e5, #1976d2);
       }
-      .btn-scan:hover {
-        background: #0056b3;
+
+      .mic-btn {
+        background: linear-gradient(135deg, #ff6f61, #e53935);
       }
-      .btn-upload {
-        background: #ffd700;
+      .mic-btn:hover {
+        background: linear-gradient(135deg, #e53935, #c62828);
       }
-      .btn-upload:hover {
-        background: #e6c200;
-      }
-      .btn-voice {
-        background: #ff5e5e;
-        color: white;
-      }
-      .btn-voice:hover {
-        background: #d43f3f;
-      }
-      .btn-submit {
-        background: #2b5797;
-        color: white;
-      }
-      .btn-submit:hover {
-        background: #1e3d73;
-      }
-      #emojiDisplay {
-        font-size: 40px;
+
+      .emoji {
+        font-size: 50px;
         margin-top: 10px;
       }
-      .falling-food {
-        position: absolute;
-        top: -50px;
-        animation: fall 8s linear infinite;
-        z-index: 1;
-      }
-      @keyframes fall {
-        0% {
-          transform: translateY(-100px) rotate(0deg);
-          opacity: 0;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(100vh) rotate(360deg);
-          opacity: 0;
-        }
-      }
+
+      /* ===== TABLE ===== */
       table {
-        width: 90%;
+        width: 85%;
         margin: 30px auto;
         border-collapse: collapse;
-        background: white;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
       }
       th {
-        background-color: #4a90e2;
+        background-color: #1e88e5;
         color: white;
-        padding: 10px;
-      }
-      td {
-        text-align: center;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
       }
       tr:hover {
-        background-color: #f2f2f2;
+        background-color: #f1f8e9;
+      }
+
+      .notify-btn {
+        background: linear-gradient(135deg, #ffa726, #fb8c00);
+        border: none;
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .notify-btn:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #fb8c00, #ef6c00);
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        header h1 {
+          font-size: 2rem;
+        }
+        .form-container {
+          width: 95%;
+        }
+        table {
+          width: 95%;
+          font-size: 14px;
+        }
       }
     </style>
   </head>
-  <body>
-    <h1>🍏 Food Waste Tracker</h1>
 
-    <div class="container">
-      <form
-        th:action="@{/food/add}"
-        method="post"
-        enctype="multipart/form-data"
-        th:object="${newItem}"
-      >
+  <body>
+    <!-- Floating emojis for animated background -->
+    <div class="floating f1">🍎</div>
+    <div class="floating f2">🥦</div>
+    <div class="floating f3">🥕</div>
+    <div class="floating f4">🍕</div>
+    <div class="floating f5">🍰</div>
+
+    <header>
+      <h1>🍏 Food Waste Tracker</h1>
+      <p>Track. Save. Sustain.</p>
+    </header>
+
+    <div class="form-container">
+      <form th:action="@{/food/add}" method="post" th:object="${newItem}">
         <input
           type="text"
           id="foodName"
           th:field="*{name}"
-          placeholder="Food Name"
+          placeholder="Enter food name"
           required
         />
         <input type="date" id="expiryDate" th:field="*{expiryDate}" required />
-        <div id="emojiDisplay"></div>
+        <div id="emojiDisplay" class="emoji">🍽️</div>
 
-        <button
-          type="button"
-          class="btn-voice"
-          onclick="startVoiceInput('name')"
-        >
-          🎤 Food Name
+        <button type="button" class="mic-btn" onclick="startVoiceInput('name')">
+          🎤 Speak Food Name
         </button>
-        <button
-          type="button"
-          class="btn-voice"
-          onclick="startVoiceInput('date')"
-        >
-          🎤 Expiry Date
+        <button type="button" class="mic-btn" onclick="startVoiceInput('date')">
+          🗓️ Speak Expiry Date
         </button>
-        <button type="button" class="btn-scan" onclick="startScanner()">
-          📷 Scan Barcode
-        </button>
-
-        <label for="fileUpload" class="btn-upload"
-          >📤 Upload Barcode / Product Image</label
-        >
-        <input type="file" id="fileUpload" name="file" style="display: none" />
-
-        <button type="submit" class="btn-submit">✅ Add Item</button>
+        <button type="button" onclick="startScanner()">📷 Scan Barcode</button>
+        <button type="submit">➕ Add Food</button>
       </form>
     </div>
 
@@ -199,46 +247,14 @@
             th:action="@{'/food/notify/' + ${item.id}}"
             method="post"
           >
-            <button
-              type="submit"
-              style="
-                background: orange;
-                border: none;
-                padding: 5px 10px;
-                cursor: pointer;
-              "
-            >
-              📩 Send SMS
-            </button>
+            <button class="notify-btn" type="submit">📩 Notify</button>
           </form>
         </td>
       </tr>
     </table>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script>
-      // Falling food emojis
-      const emojis = [
-        "🍎",
-        "🍌",
-        "🍊",
-        "🍕",
-        "🥛",
-        "🍞",
-        "🍗",
-        "🥦",
-        "🍰",
-        "🍫",
-      ];
-      for (let i = 0; i < 15; i++) {
-        const food = document.createElement("div");
-        food.classList.add("falling-food");
-        food.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        food.style.left = Math.random() * 100 + "vw";
-        food.style.fontSize = Math.random() * 25 + 20 + "px";
-        food.style.animationDuration = 5 + Math.random() * 5 + "s";
-        document.body.appendChild(food);
-      }
-
       // Emoji mapping
       const emojiMap = {
         apple: "🍎",
@@ -251,6 +267,7 @@
         cheese: "🧀",
         chicken: "🍗",
         fish: "🐟",
+        meat: "🥩",
         tomato: "🍅",
         potato: "🥔",
         carrot: "🥕",
@@ -258,6 +275,9 @@
         burger: "🍔",
         cake: "🍰",
         chocolate: "🍫",
+        ice: "🍨",
+        water: "💧",
+        coffee: "☕",
       };
 
       function updateEmojiDisplay(foodName) {
@@ -272,14 +292,18 @@
         document.getElementById("emojiDisplay").textContent = emoji;
       }
 
-      // Voice input (food name or date)
+      // Voice input
       function startVoiceInput(type) {
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-          alert("Your browser doesn't support speech recognition.");
+        if (
+          !(
+            "webkitSpeechRecognition" in window || "SpeechRecognition" in window
+          )
+        ) {
+          alert("Voice recognition not supported.");
           return;
         }
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = "en-US";
         recognition.start();
@@ -290,21 +314,26 @@
             document.getElementById("foodName").value = transcript;
             updateEmojiDisplay(transcript);
           } else if (type === "date") {
-            document.getElementById("expiryDate").value =
-              parseSpokenDate(transcript);
+            const parsed = transcript.match(
+              /(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/
+            );
+            if (parsed)
+              document.getElementById("expiryDate").value = `${
+                parsed[1]
+              }-${parsed[2].padStart(2, "0")}-${parsed[3].padStart(2, "0")}`;
+            else alert("Couldn't detect date properly.");
           }
         };
       }
 
-      function parseSpokenDate(spoken) {
-        const parts = spoken.match(/(\d{4})[^\d]?(\d{1,2})[^\d]?(\d{1,2})/);
-        if (parts)
-          return `${parts[1]}-${parts[2].padStart(2, "0")}-${parts[3].padStart(
-            2,
-            "0"
-          )}`;
-        return null;
+      // Barcode scanner
+      function startScanner() {
+        alert("Barcode scanning coming soon! (For now, type manually)");
       }
+
+      document
+        .getElementById("foodName")
+        .addEventListener("input", (e) => updateEmojiDisplay(e.target.value));
     </script>
   </body>
 </html>
