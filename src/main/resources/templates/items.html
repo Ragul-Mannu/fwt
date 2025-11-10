@@ -209,7 +209,36 @@
   <body>
     <header>
       <h1>Food Waste Tracker</h1>
-      <p>Track • Save • Sustain • Enjoy</p>
+      <p th:text="'Logged in as: ' + ${username}"></p>
+      <div style="margin-top: 10px">
+        <a
+          href="/items/download"
+          style="
+            background: linear-gradient(135deg, #66bb6a, #388e3c);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+          "
+        >
+          ⬇️ Download CSV
+        </a>
+        <a
+          href="/logout"
+          style="
+            background: linear-gradient(135deg, #ef5350, #d32f2f);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 10px;
+          "
+        >
+          🚪 Logout
+        </a>
+      </div>
     </header>
 
     <div class="form-container">
@@ -270,6 +299,11 @@
             style="background: linear-gradient(135deg, #ef5350, #d32f2f)"
             >🗑️ Delete</a
           >
+        </td>
+        <td>
+          <form th:action="@{'/items/notify/' + ${item.id}}" method="post">
+            <button class="notify-btn" type="submit">📩 Notify</button>
+          </form>
         </td>
       </tr>
     </table>

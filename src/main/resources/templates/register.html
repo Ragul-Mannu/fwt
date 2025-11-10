@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register - Food Waste Tracker</title>
+    <style>
+      body {
+        font-family: Poppins, sans-serif;
+        background: #e8f5e9;
+        text-align: center;
+      }
+      .form-container {
+        margin-top: 100px;
+        display: inline-block;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      input,
+      button {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+      button {
+        background-color: #43a047;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #2e7d32;
+      }
+      a {
+        text-decoration: none;
+        color: #2e7d32;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Register</h2>
+      <form th:action="@{/register}" method="post" th:object="${user}">
+        <input
+          type="text"
+          th:field="*{username}"
+          placeholder="Username"
+          required
+        />
+        <input
+          type="password"
+          th:field="*{password}"
+          placeholder="Password"
+          required
+        />
+        <input
+          type="text"
+          th:field="*{phoneNumber}"
+          placeholder="Phone Number (+91...)"
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+      <p th:text="${error}" style="color: red"></p>
+      <p th:text="${success}" style="color: green"></p>
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </body>
+</html>
