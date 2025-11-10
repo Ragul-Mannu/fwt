@@ -1,5 +1,9 @@
-package com.tracker;
+package com.tracker.controller;
 
+import com.tracker.FoodItem;
+import com.tracker.model.User;
+import com.tracker.repository.FoodItemRepository;
+import com.tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,68 +13,71 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/food")
+@RequestMapping("/items")
 public class FoodItemController {
 
     @Autowired
-    private FoodItemRepository repository;
+    private FoodItemRepository foodItemRepository;
 
     @Autowired
-    private TwilioNotifier notifier;
+    private UserRepository userRepository;
 
+    // Temporary: assume a fixed user (we’ll replace this with logged-in user later)
+    private String currentUsername = "ragul";
+
+    // 🟢 Show all food items for the current user
     @GetMapping
-    public String redirectToView() {
-        return "redirect:/food/view";
-    }
-
-    @GetMapping("/view")
     public String viewItems(Model model) {
-        List<FoodItem> allItems = repository.findAll();
-        LocalDate today = LocalDate.now();
-
-        for (FoodItem item : allItems) {
-            if (item.getExpiryDate().isBefore(today)) {
-                item.setStatus("❌ Expired");
-            } else if (item.getExpiryDate().isBefore(today.plusDays(3))) {
-                item.setStatus("⚠️ Near Expiry");
-            } else {
-                item.setStatus("✅ Fresh");
-            }
-
-            // Auto emoji
-            String name = item.getName().toLowerCase();
-            if (name.contains("apple")) item.setEmoji("🍎");
-            else if (name.contains("banana")) item.setEmoji("🍌");
-            else if (name.contains("milk")) item.setEmoji("🥛");
-            else if (name.contains("bread")) item.setEmoji("🍞");
-            else if (name.contains("rice")) item.setEmoji("🍚");
-            else if (name.contains("egg")) item.setEmoji("🥚");
-            else if (name.contains("fish")) item.setEmoji("🐟");
-            else if (name.contains("chicken")) item.setEmoji("🍗");
-            else if (name.contains("pizza")) item.setEmoji("🍕");
-            else if (name.contains("burger")) item.setEmoji("🍔");
-            else if (name.contains("cake")) item.setEmoji("🍰");
-            else item.setEmoji("🍽️");
-        }
-
-        model.addAttribute("items", allItems);
+        User user = userRepository.findByUsername(currentUsername);
+        List<FoodItem> items = foodItemRepository.findByUser(user);
+        model.addAttribute("items", items);
         model.addAttribute("newItem", new FoodItem());
-
-        return "items"; 
+        return "items"; // This maps to templates/items.html
     }
 
+    // 🟢 Add new food item
     @PostMapping("/add")
-    public String addItem(@ModelAttribute FoodItem foodItem) {
-        repository.save(foodItem);
-        return "redirect:/food/view";
+    public String addItem(@ModelAttribute FoodItem newItem) {
+        User user = userRepository.findByUsername(currentUsername);
+        newItem.setUser(user);
+
+        // Automatically set status based on expiry
+        LocalDate today = LocalDate.now();
+        if (newItem.getExpiryDate().isBefore(today)) {
+            newItem.setStatus("Expired");
+            newItem.setEmoji("⚠️");
+        } else if (newItem.getExpiryDate().isBefore(today.plusDays(2))) {
+            newItem.setStatus("Near Expiry");
+            newItem.setEmoji("⏰");
+        } else {
+            newItem.setStatus("Fresh");
+            newItem.setEmoji("✅");
+        }
+
+        foodItemRepository.save(newItem);
+        return "redirect:/items";
     }
 
-    @PostMapping("/notify/{id}")
-    public String notifyItem(@PathVariable("id") Long id) {
-        FoodItem item = repository.findById(id).orElse(null);
-        if (item != null) {
-            notifier.sendNotification(item.getName(), item.getExpiryDate().toString());
-        }
-        return "redirect:/food/view";
+    // 🟡 Delete item by ID
+    @GetMapping("/delete/{id}")
+    public String deleteItem(@PathVariable Long id) {
+        foodItemRepository.deleteById(id);
+        return "redirect:/items";
+    }
+
+    // 🟢 Edit food item
+    @GetMapping("/edit/{id}")
+    public String editItem(@PathVariable Long id, Model model) {
+        FoodItem item = foodItemRepository.findById(id).orElse(null);
+        model.addAttribute("item", item);
+        return "edit_item"; // Create this page later if needed
+    }
+
+    @PostMapping("/update")
+    public String updateItem(@ModelAttribute FoodItem updatedItem) {
+        User user = userRepository.findByUsername(currentUsername);
+        updatedItem.setUser(user);
+        foodItemRepository.save(updatedItem);
+        return "redirect:/items";
     }
 }
