@@ -11,3 +11,5 @@ application.properties
 .idea/
 *.iml
 .vscode/
+# Ignore compiled output
+/target/

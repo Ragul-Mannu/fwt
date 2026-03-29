@@ -1,0 +1,6 @@
+com\tracker\FoodItemController.class
+com\tracker\TwilioConfig.class
+com\tracker\FoodItem.class
+com\tracker\FoodItemRepository.class
+com\tracker\FoodWasteTrackerApplication.class
+com\tracker\TwilioNotifier.class
